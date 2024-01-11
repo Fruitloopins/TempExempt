@@ -1,0 +1,1 @@
+Use `/tempexempt {username} {time}` to exempt a player from Grim anticheat for the specified time.

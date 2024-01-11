@@ -37,7 +37,21 @@ public class TempExemptCommand implements TabExecutor {
             return true;
         }
 
-        int exemptTime = TempExempt.INSTANCE.getConfig().getInt("exempt_time");
+        int exemptTime;
+        if (args.length > 1) {
+            try {
+                int parsedInt = Integer.parseInt(args[1]);
+                if (parsedInt <= 0) parsedInt = 1;
+
+                exemptTime = Math.min(parsedInt, 60);
+            } catch (NumberFormatException e) {
+                sender.sendMessage(Component.text("Invalid exemption time specified", NamedTextColor.RED));
+                return true;
+            }
+        } else {
+            exemptTime = TempExempt.INSTANCE.getConfig().getInt("exempt_time");
+        }
+
         NodeBuilder builder = Node.builder("grim.exempt")
                         .value(true).expiry(exemptTime, TimeUnit.MINUTES);
 
@@ -55,21 +69,24 @@ public class TempExemptCommand implements TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        if (args.length == 1) {
-            List<String> onlinePlayers = new ArrayList<>();
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                onlinePlayers.add(player.getName());
+        switch (args.length) {
+            case 1: {
+                List<String> onlinePlayers = new ArrayList<>();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    onlinePlayers.add(player.getName());
+                }
+
+                if (args[0].isEmpty()) {
+                    return onlinePlayers;
+                } else {
+                    return onlinePlayers.stream()
+                            .filter(name -> name.startsWith(args[0]))
+                            .collect(Collectors.toList());
+                }
             }
 
-            if (args[0].isEmpty()) {
-                return onlinePlayers;
-            } else {
-                return onlinePlayers.stream()
-                        .filter(name -> name.startsWith(args[0]))
-                        .collect(Collectors.toList());
-            }
+            case 2: return List.of("{time}");
+            default: return null;
         }
-
-        return null;
     }
 }
