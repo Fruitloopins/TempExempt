@@ -2,6 +2,7 @@ name: TempExempt
 version: "${project.version}"
 main: net.earthmc.tempexempt.TempExempt
 api-version: "1.19"
+folia-supported: true
 authors: [Fruitloopins]
 description: Temporarily exempt players from Grim anticheat for evidence gathering
 website: https://earthmc.net
